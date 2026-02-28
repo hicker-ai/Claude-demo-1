@@ -4,7 +4,6 @@ import (
 	"strings"
 	"testing"
 
-	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 )
 
@@ -313,9 +312,7 @@ func TestEvaluateIntegration(t *testing.T) {
 	}
 
 	// Build the full query to verify it is valid SQL.
-	selector := sql.Dialect(dialect.SQLite).Select("*").From(sql.Table("users"))
-	selector.Where(p)
-	query, _ := selector.Query()
+	query := predicateToSQL(p)
 	if query == "" {
 		t.Error("generated SQL query is empty")
 	}
