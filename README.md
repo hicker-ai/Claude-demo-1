@@ -57,7 +57,7 @@ jwt:
 
 ```bash
 # 编译
-go build -o bin/usermanager ./cmd/server/
+go build -o bin/usermanager .
 
 # 启动（自动执行数据库迁移）
 ./bin/usermanager serve --config configs/config.yaml
@@ -223,7 +223,8 @@ cd web && npx tsc --noEmit
 ## 项目结构
 
 ```
-├── cmd/server/          # 入口和 Cobra 命令
+├── main.go              # 程序入口
+├── cmd/                 # Cobra 命令（root、serve）
 ├── configs/             # 配置文件
 ├── internal/
 │   ├── config/          # 配置加载

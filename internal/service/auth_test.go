@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	_ "github.com/mattn/go-sqlite3"
+
 	"github.com/qinzj/claude-demo/internal/dao"
 	"github.com/qinzj/claude-demo/internal/domain"
 	"github.com/qinzj/claude-demo/internal/ent/enttest"

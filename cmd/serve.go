@@ -1,4 +1,4 @@
-package main
+package cmd
 
 import (
 	"context"
@@ -9,16 +9,16 @@ import (
 	"syscall"
 
 	"github.com/jimlambrt/gldap"
+	_ "github.com/lib/pq"
+	"github.com/spf13/cobra"
+	"go.uber.org/zap"
+
 	"github.com/qinzj/claude-demo/internal/config"
 	"github.com/qinzj/claude-demo/internal/dao"
 	"github.com/qinzj/claude-demo/internal/ent"
 	httphandler "github.com/qinzj/claude-demo/internal/handler/http"
 	ldaphandler "github.com/qinzj/claude-demo/internal/handler/ldap"
 	"github.com/qinzj/claude-demo/internal/service"
-	"github.com/spf13/cobra"
-	"go.uber.org/zap"
-
-	_ "github.com/lib/pq"
 )
 
 var serveCmd = &cobra.Command{

@@ -2,10 +2,11 @@ package http
 
 import (
 	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
+
 	"github.com/qinzj/claude-demo/internal/config"
 	"github.com/qinzj/claude-demo/internal/middleware"
 	"github.com/qinzj/claude-demo/internal/service"
-	"go.uber.org/zap"
 )
 
 // SetupRouter creates and configures the Gin router with all routes.

@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
+
 	"github.com/qinzj/claude-demo/internal/domain"
 	"github.com/qinzj/claude-demo/internal/ent"
 	"github.com/qinzj/claude-demo/internal/ent/user"

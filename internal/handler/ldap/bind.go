@@ -4,8 +4,9 @@ import (
 	"context"
 
 	"github.com/jimlambrt/gldap"
-	"github.com/qinzj/claude-demo/internal/ldap/dn"
 	"go.uber.org/zap"
+
+	"github.com/qinzj/claude-demo/internal/ldap/dn"
 )
 
 func (h *Handler) handleBind(w *gldap.ResponseWriter, r *gldap.Request) {

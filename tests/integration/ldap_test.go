@@ -3,8 +3,9 @@ package integration
 import (
 	"testing"
 
-	"github.com/google/uuid"
 	goldap "github.com/go-ldap/ldap/v3"
+	"github.com/google/uuid"
+
 	"github.com/qinzj/claude-demo/internal/domain"
 )
 

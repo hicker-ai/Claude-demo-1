@@ -14,13 +14,14 @@ import (
 
 	"github.com/jimlambrt/gldap"
 	_ "github.com/mattn/go-sqlite3"
+	"go.uber.org/zap"
+
 	"github.com/qinzj/claude-demo/internal/config"
 	"github.com/qinzj/claude-demo/internal/dao"
 	"github.com/qinzj/claude-demo/internal/ent"
 	httphandler "github.com/qinzj/claude-demo/internal/handler/http"
 	ldaphandler "github.com/qinzj/claude-demo/internal/handler/ldap"
 	"github.com/qinzj/claude-demo/internal/service"
-	"go.uber.org/zap"
 )
 
 var (

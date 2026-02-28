@@ -5,10 +5,11 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
+	"golang.org/x/crypto/bcrypt"
+
 	"github.com/qinzj/claude-demo/internal/dao"
 	"github.com/qinzj/claude-demo/internal/domain"
 	"github.com/qinzj/claude-demo/internal/ent/user"
-	"golang.org/x/crypto/bcrypt"
 )
 
 // UserService handles user business logic.
