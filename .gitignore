@@ -16,6 +16,11 @@ bin/
 *.swp
 *.swo
 
+# AI tools
+.ai-context/
+.claude/
+.cursor/
+
 # OS
 .DS_Store
 *~
