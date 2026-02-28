@@ -1,0 +1,22 @@
+server:
+  http_port: 8080
+
+database:
+  host: localhost
+  port: 5432
+  user: postgres
+  password: postgres
+  dbname: usermanager
+  sslmode: disable
+
+ldap:
+  port: 10389
+  base_dn: "dc=example,dc=com"
+  mode: "openldap"
+
+log:
+  level: "info"
+
+jwt:
+  secret: "changeme"
+  expire_hours: 24
