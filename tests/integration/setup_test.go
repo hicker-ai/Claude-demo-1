@@ -72,7 +72,7 @@ func TestMain(m *testing.M) {
 	defer httpServer.Close()
 
 	// Setup LDAP server
-	ldapHandler := ldaphandler.New(userSvc, groupSvc, testBaseDN, testMode, logger)
+	ldapHandler := ldaphandler.New(userSvc, groupSvc, ldapCfg, logger)
 	ldapServer, err = gldap.NewServer()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "create LDAP server: %v\n", err)

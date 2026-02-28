@@ -7,6 +7,7 @@ import (
 	"github.com/jimlambrt/gldap"
 	"go.uber.org/zap"
 
+	"github.com/qinzj/claude-demo/internal/config"
 	"github.com/qinzj/claude-demo/internal/domain"
 	"github.com/qinzj/claude-demo/internal/ldap/attrs"
 	"github.com/qinzj/claude-demo/internal/ldap/dn"
@@ -27,20 +28,16 @@ type GroupService interface {
 type Handler struct {
 	userService  UserService
 	groupService GroupService
-	mapper       *attrs.Mapper
-	baseDN       string
-	mode         string
+	cfg          *config.LDAPConfig
 	logger       *zap.Logger
 }
 
 // New creates a new LDAP Handler.
-func New(userSvc UserService, groupSvc GroupService, baseDN, mode string, logger *zap.Logger) *Handler {
+func New(userSvc UserService, groupSvc GroupService, cfg *config.LDAPConfig, logger *zap.Logger) *Handler {
 	return &Handler{
 		userService:  userSvc,
 		groupService: groupSvc,
-		mapper:       attrs.NewMapper(mode),
-		baseDN:       baseDN,
-		mode:         mode,
+		cfg:          cfg,
 		logger:       logger,
 	}
 }
@@ -52,19 +49,20 @@ func (h *Handler) RegisterRoutes(mux *gldap.Mux) {
 }
 
 func (h *Handler) buildUserDN(u *domain.User) string {
-	return dn.BuildUserDN(u.Username, u.DisplayName, h.baseDN, h.mode)
+	return dn.BuildUserDN(u.Username, u.DisplayName, h.cfg.BaseDN, h.cfg.Mode)
 }
 
 func (h *Handler) buildGroupDN(g *domain.Group) string {
-	return dn.BuildGroupDN(g.Name, h.baseDN, h.mode)
+	return dn.BuildGroupDN(g.Name, h.cfg.BaseDN, h.cfg.Mode)
 }
 
 func (h *Handler) userToEntry(u *domain.User) *ldapEntry {
 	userDN := h.buildUserDN(u)
-	attrsMap := h.mapper.UserToLDAPAttrs(u.Username, u.DisplayName, u.Email, u.Phone, string(u.Status))
+	mapper := attrs.NewMapper(h.cfg.Mode)
+	attrsMap := mapper.UserToLDAPAttrs(u.Username, u.DisplayName, u.Email, u.Phone, string(u.Status))
 
 	// Add objectClass
-	attrsMap["objectClass"] = h.mapper.UserObjectClasses()
+	attrsMap["objectClass"] = mapper.UserObjectClasses()
 
 	// Add dn as attribute
 	attrsMap["dn"] = []string{userDN}
@@ -77,6 +75,7 @@ func (h *Handler) userToEntry(u *domain.User) *ldapEntry {
 
 func (h *Handler) groupToEntry(g *domain.Group) *ldapEntry {
 	groupDN := h.buildGroupDN(g)
+	mapper := attrs.NewMapper(h.cfg.Mode)
 
 	var memberDNs []string
 	if g.Users != nil {
@@ -85,8 +84,8 @@ func (h *Handler) groupToEntry(g *domain.Group) *ldapEntry {
 		}
 	}
 
-	attrsMap := h.mapper.GroupToLDAPAttrs(g.Name, g.Description, memberDNs)
-	attrsMap["objectClass"] = h.mapper.GroupObjectClasses()
+	attrsMap := mapper.GroupToLDAPAttrs(g.Name, g.Description, memberDNs)
+	attrsMap["objectClass"] = mapper.GroupObjectClasses()
 	attrsMap["dn"] = []string{groupDN}
 
 	return &ldapEntry{

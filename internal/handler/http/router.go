@@ -2,6 +2,8 @@ package http
 
 import (
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 	"go.uber.org/zap"
 
 	"github.com/qinzj/claude-demo/internal/config"
@@ -27,15 +29,18 @@ func SetupRouter(
 	groupHandler := NewGroupHandler(groupSvc)
 	ldapHandler := NewLDAPConfigHandler(ldapCfg)
 
+	// Swagger UI: GET /swagger/index.html
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
 	api := r.Group("/api/v1")
 	{
 		api.POST("/auth/login", authHandler.Login)
 		api.POST("/auth/logout", authHandler.Logout)
+		api.POST("/users", userHandler.Create)
 
 		protected := api.Group("")
 		protected.Use(middleware.JWTAuth(authSvc))
 		{
-			protected.POST("/users", userHandler.Create)
 			protected.GET("/users", userHandler.List)
 			protected.GET("/users/:id", userHandler.Get)
 			protected.PUT("/users/:id", userHandler.Update)

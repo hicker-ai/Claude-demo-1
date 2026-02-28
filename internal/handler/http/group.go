@@ -39,7 +39,18 @@ type AddMembersReq struct {
 	UserIDs []string `json:"user_ids" binding:"required,min=1"`
 }
 
-// Create creates a new group.
+// Create godoc
+// @Summary      Create group
+// @Description  Create a new user group, optionally with a parent group
+// @Tags         Group
+// @Accept       json
+// @Produce      json
+// @Param        Authorization  header    string          true  "Bearer token"
+// @Param        request        body      CreateGroupReq  true  "Group info"
+// @Success      200            {object}  Response{data=domain.Group}
+// @Failure      400            {object}  Response
+// @Failure      500            {object}  Response
+// @Router       /api/v1/groups [post]
 func (h *GroupHandler) Create(c *gin.Context) {
 	var req CreateGroupReq
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -68,7 +79,17 @@ func (h *GroupHandler) Create(c *gin.Context) {
 	OK(c, g)
 }
 
-// Get retrieves a group by ID.
+// Get godoc
+// @Summary      Get group
+// @Description  Retrieve a group by ID with children
+// @Tags         Group
+// @Produce      json
+// @Param        Authorization  header    string  true  "Bearer token"
+// @Param        id             path      string  true  "Group ID (UUID)"
+// @Success      200            {object}  Response{data=domain.Group}
+// @Failure      400            {object}  Response
+// @Failure      404            {object}  Response
+// @Router       /api/v1/groups/{id} [get]
 func (h *GroupHandler) Get(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
@@ -84,7 +105,15 @@ func (h *GroupHandler) Get(c *gin.Context) {
 	OK(c, g)
 }
 
-// List lists all groups.
+// List godoc
+// @Summary      List groups
+// @Description  List all groups
+// @Tags         Group
+// @Produce      json
+// @Param        Authorization  header    string  true  "Bearer token"
+// @Success      200            {object}  Response{data=[]domain.Group}
+// @Failure      500            {object}  Response
+// @Router       /api/v1/groups [get]
 func (h *GroupHandler) List(c *gin.Context) {
 	groups, err := h.groupService.ListGroups(c.Request.Context())
 	if err != nil {
@@ -94,7 +123,19 @@ func (h *GroupHandler) List(c *gin.Context) {
 	OK(c, groups)
 }
 
-// Update updates a group.
+// Update godoc
+// @Summary      Update group
+// @Description  Update group fields (name, description, parent_id)
+// @Tags         Group
+// @Accept       json
+// @Produce      json
+// @Param        Authorization  header    string          true  "Bearer token"
+// @Param        id             path      string          true  "Group ID (UUID)"
+// @Param        request        body      UpdateGroupReq  true  "Fields to update"
+// @Success      200            {object}  Response{data=domain.Group}
+// @Failure      400            {object}  Response
+// @Failure      500            {object}  Response
+// @Router       /api/v1/groups/{id} [put]
 func (h *GroupHandler) Update(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
@@ -129,7 +170,17 @@ func (h *GroupHandler) Update(c *gin.Context) {
 	OK(c, g)
 }
 
-// Delete deletes a group.
+// Delete godoc
+// @Summary      Delete group
+// @Description  Delete a group by ID
+// @Tags         Group
+// @Produce      json
+// @Param        Authorization  header    string  true  "Bearer token"
+// @Param        id             path      string  true  "Group ID (UUID)"
+// @Success      200            {object}  Response
+// @Failure      400            {object}  Response
+// @Failure      500            {object}  Response
+// @Router       /api/v1/groups/{id} [delete]
 func (h *GroupHandler) Delete(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
@@ -144,7 +195,19 @@ func (h *GroupHandler) Delete(c *gin.Context) {
 	OK(c, nil)
 }
 
-// AddMembers adds users to a group.
+// AddMembers godoc
+// @Summary      Add members
+// @Description  Add users to a group
+// @Tags         Group
+// @Accept       json
+// @Produce      json
+// @Param        Authorization  header    string         true  "Bearer token"
+// @Param        id             path      string         true  "Group ID (UUID)"
+// @Param        request        body      AddMembersReq  true  "User IDs to add"
+// @Success      200            {object}  Response
+// @Failure      400            {object}  Response
+// @Failure      500            {object}  Response
+// @Router       /api/v1/groups/{id}/members [post]
 func (h *GroupHandler) AddMembers(c *gin.Context) {
 	groupID, err := uuid.Parse(c.Param("id"))
 	if err != nil {
@@ -175,7 +238,18 @@ func (h *GroupHandler) AddMembers(c *gin.Context) {
 	OK(c, nil)
 }
 
-// RemoveMember removes a user from a group.
+// RemoveMember godoc
+// @Summary      Remove member
+// @Description  Remove a user from a group
+// @Tags         Group
+// @Produce      json
+// @Param        Authorization  header    string  true  "Bearer token"
+// @Param        id             path      string  true  "Group ID (UUID)"
+// @Param        uid            path      string  true  "User ID (UUID)"
+// @Success      200            {object}  Response
+// @Failure      400            {object}  Response
+// @Failure      500            {object}  Response
+// @Router       /api/v1/groups/{id}/members/{uid} [delete]
 func (h *GroupHandler) RemoveMember(c *gin.Context) {
 	groupID, err := uuid.Parse(c.Param("id"))
 	if err != nil {
@@ -196,7 +270,17 @@ func (h *GroupHandler) RemoveMember(c *gin.Context) {
 	OK(c, nil)
 }
 
-// GetMembers returns the members of a group.
+// GetMembers godoc
+// @Summary      Get group members
+// @Description  Return all users in a group
+// @Tags         Group
+// @Produce      json
+// @Param        Authorization  header    string  true  "Bearer token"
+// @Param        id             path      string  true  "Group ID (UUID)"
+// @Success      200            {object}  Response{data=[]domain.User}
+// @Failure      400            {object}  Response
+// @Failure      500            {object}  Response
+// @Router       /api/v1/groups/{id}/members [get]
 func (h *GroupHandler) GetMembers(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {

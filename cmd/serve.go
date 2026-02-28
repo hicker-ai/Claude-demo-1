@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"os"
@@ -10,15 +11,18 @@ import (
 
 	"github.com/jimlambrt/gldap"
 	_ "github.com/lib/pq"
+	_ "github.com/mattn/go-sqlite3"
 	"github.com/spf13/cobra"
 	"go.uber.org/zap"
 
+	_ "github.com/qinzj/claude-demo/docs/api"
 	"github.com/qinzj/claude-demo/internal/config"
 	"github.com/qinzj/claude-demo/internal/dao"
 	"github.com/qinzj/claude-demo/internal/ent"
 	httphandler "github.com/qinzj/claude-demo/internal/handler/http"
 	ldaphandler "github.com/qinzj/claude-demo/internal/handler/ldap"
 	"github.com/qinzj/claude-demo/internal/service"
+	"github.com/qinzj/claude-demo/pkg/logs"
 )
 
 var serveCmd = &cobra.Command{
@@ -39,19 +43,21 @@ func runServe(cmd *cobra.Command, _ []string) error {
 	}
 
 	// Init logger
-	var logger *zap.Logger
-	if cfg.Log.Level == "debug" {
-		logger, err = zap.NewDevelopment()
-	} else {
-		logger, err = zap.NewProduction()
-	}
-	if err != nil {
-		return fmt.Errorf("initializing logger: %w", err)
-	}
+	logs.Init(cfg.Log.ToLogsConfig())
+	logger := logs.Logger()
 	defer func() { _ = logger.Sync() }()
 
+	// Ensure data directory for SQLite
+	if err = cfg.Database.EnsureDataDir(); err != nil {
+		logger.Fatal("failed to create data directory", zap.Error(err))
+	}
+
 	// Init Ent client
-	entClient, err := ent.Open("postgres", cfg.Database.DSN())
+	driver := cfg.Database.Driver
+	if driver == "" {
+		driver = "sqlite3"
+	}
+	entClient, err := ent.Open(driver, cfg.Database.DSN())
 	if err != nil {
 		logger.Fatal("failed to connect to database", zap.Error(err))
 	}
@@ -77,7 +83,7 @@ func runServe(cmd *cobra.Command, _ []string) error {
 	}
 
 	// Setup LDAP server
-	ldapHandler := ldaphandler.New(userSvc, groupSvc, cfg.LDAP.BaseDN, cfg.LDAP.Mode, logger)
+	ldapHandler := ldaphandler.New(userSvc, groupSvc, &cfg.LDAP, logger)
 	ldapServer, err := gldap.NewServer()
 	if err != nil {
 		logger.Fatal("failed to create LDAP server", zap.Error(err))
@@ -98,7 +104,7 @@ func runServe(cmd *cobra.Command, _ []string) error {
 	// Start HTTP server
 	go func() {
 		logger.Info("HTTP server started", zap.Int("port", cfg.Server.HTTPPort))
-		if err := httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		if err = httpServer.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			errCh <- fmt.Errorf("HTTP server error: %w", err)
 		}
 	}()

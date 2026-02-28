@@ -8,14 +8,14 @@ import (
 
 // Group represents a user group in the system.
 type Group struct {
-	ID          uuid.UUID
-	Name        string
-	Description string
-	ParentID    *uuid.UUID
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
-	Children    []*Group
-	Users       []*User
+	ID          uuid.UUID  `json:"id"`
+	Name        string     `json:"name"`
+	Description string     `json:"description"`
+	ParentID    *uuid.UUID `json:"parent_id,omitempty"`
+	CreatedAt   time.Time  `json:"created_at"`
+	UpdatedAt   time.Time  `json:"updated_at"`
+	Children    []*Group   `json:"children,omitempty"`
+	Users       []*User    `json:"users,omitempty"`
 }
 
 // CreateGroupInput holds input for creating a new group.

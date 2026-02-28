@@ -56,3 +56,9 @@ ai-skills-install: ai-skills-init cursor-skills
 
 # install ai context(contain skill)
 ai-context-install: ai-rules-install ai-skills-install
+
+# swagger
+swagger:
+	@echo "Generating swagger docs..."
+	@swag init -g main.go -o docs/api --parseInternal
+	@echo "Done -> docs/api/"

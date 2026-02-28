@@ -6,60 +6,57 @@
 
 - **后端**: Go 1.24 + Gin + Ent ORM + gldap + Zap
 - **前端**: React 19 + Ant Design + TypeScript + Vite
-- **数据库**: PostgreSQL
+- **数据库**: SQLite（默认） / PostgreSQL
 - **认证**: JWT (HTTP) / LDAP Bind
 
 ## 前置要求
 
 - Go 1.24+
 - Node.js 18+
-- PostgreSQL 14+
+- PostgreSQL 14+（仅在使用 PostgreSQL 时需要）
 
 ## 快速开始
 
-### 1. 准备数据库
+### 1. 配置数据库
 
-```bash
-# 创建数据库
-createdb usermanager
+默认使用 SQLite，无需额外安装，数据存储在 `data/app.db`。
 
-# 或通过 psql
-psql -U postgres -c "CREATE DATABASE usermanager;"
-```
+编辑 `configs/config.yaml`：
 
-### 2. 修改配置
-
-编辑 `configs/config.yaml`，根据实际环境修改数据库连接信息和 JWT 密钥：
+**SQLite（默认，开箱即用）：**
 
 ```yaml
-server:
-  http_port: 8080
-
 database:
+  driver: sqlite3
+  path: data/app.db
+```
+
+**PostgreSQL：**
+
+```yaml
+database:
+  driver: postgres
   host: localhost
   port: 5432
   user: postgres
   password: postgres
   dbname: usermanager
   sslmode: disable
-
-ldap:
-  port: 10389
-  base_dn: "dc=example,dc=com"
-  mode: "openldap"  # 或 "activedirectory"
-
-jwt:
-  secret: "your-secret-key"  # 生产环境务必修改
-  expire_hours: 24
 ```
 
-### 3. 启动后端
+使用 PostgreSQL 时需先创建数据库：
+
+```bash
+createdb usermanager
+```
+
+### 2. 启动后端
 
 ```bash
 # 编译
 go build -o bin/usermanager .
 
-# 启动（自动执行数据库迁移）
+# 启动（自动执行数据库迁移，SQLite 会自动创建 data/ 目录和数据库文件）
 ./bin/usermanager serve --config configs/config.yaml
 ```
 
@@ -67,7 +64,7 @@ go build -o bin/usermanager .
 - **HTTP API**: `http://localhost:8080`
 - **LDAP Server**: `ldap://localhost:10389`
 
-### 4. 启动前端（开发模式）
+### 3. 启动前端（开发模式）
 
 ```bash
 cd web
@@ -77,7 +74,7 @@ npm run dev
 
 浏览器访问 `http://localhost:5173`，前端开发服务器会自动代理 `/api` 请求到后端 `localhost:8080`。
 
-### 5. 前端生产构建
+### 4. 前端生产构建
 
 ```bash
 cd web
@@ -88,20 +85,18 @@ npm run build
 
 ## 创建初始用户
 
-系统启动后没有默认用户，需要通过 API 创建第一个用户（登录接口不需要 token）：
+创建用户接口无需认证，启动后直接创建第一个用户：
 
 ```bash
-# 1. 先通过 API 创建用户（此时无需认证）
-#    注意：如果 /api/v1/users 需要认证，可以临时修改代码或直接操作数据库
-#    推荐做法：通过 LDAP 或直接插入数据库创建管理员
+# 1. 创建用户
+curl -X POST http://localhost:8080/api/v1/users \
+  -H "Content-Type: application/json" \
+  -d '{"username":"admin","password":"password123","display_name":"Admin","email":"admin@example.com"}'
 
 # 2. 登录获取 token
 curl -X POST http://localhost:8080/api/v1/auth/login \
   -H "Content-Type: application/json" \
   -d '{"username":"admin","password":"password123"}'
-
-# 返回示例：
-# {"code":0,"message":"success","data":{"token":"eyJhbG...","user":{"id":"...","username":"admin","display_name":"Admin"}}}
 ```
 
 ## HTTP API

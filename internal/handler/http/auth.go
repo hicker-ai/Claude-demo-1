@@ -24,7 +24,17 @@ type LoginReq struct {
 	Password string `json:"password" binding:"required"`
 }
 
-// Login authenticates a user and returns a JWT token.
+// Login godoc
+// @Summary      User login
+// @Description  Authenticate with username and password, returns JWT token
+// @Tags         Auth
+// @Accept       json
+// @Produce      json
+// @Param        request  body      LoginReq  true  "Login credentials"
+// @Success      200      {object}  Response{data=object{token=string,user=object{id=string,username=string,display_name=string}}}
+// @Failure      400      {object}  Response
+// @Failure      401      {object}  Response
+// @Router       /api/v1/auth/login [post]
 func (h *AuthHandler) Login(c *gin.Context) {
 	var req LoginReq
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -48,7 +58,13 @@ func (h *AuthHandler) Login(c *gin.Context) {
 	})
 }
 
-// Logout handles user logout (stateless JWT - just returns success).
+// Logout godoc
+// @Summary      User logout
+// @Description  Stateless logout (JWT is not invalidated server-side)
+// @Tags         Auth
+// @Produce      json
+// @Success      200  {object}  Response
+// @Router       /api/v1/auth/logout [post]
 func (h *AuthHandler) Logout(c *gin.Context) {
 	OK(c, nil)
 }

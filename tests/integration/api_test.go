@@ -154,7 +154,7 @@ func TestUserLifecycle(t *testing.T) {
 			t.Fatalf("update user failed: %s", r.Message)
 		}
 		var data struct {
-			DisplayName string `json:"DisplayName"`
+			DisplayName string `json:"display_name"`
 		}
 		json.Unmarshal(r.Data, &data)
 		if data.DisplayName != newName {

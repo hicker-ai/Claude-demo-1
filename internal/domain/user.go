@@ -16,16 +16,16 @@ const (
 
 // User represents a user in the system.
 type User struct {
-	ID           uuid.UUID
-	Username     string
-	DisplayName  string
-	Email        string
-	PasswordHash string
-	Phone        string
-	Status       UserStatus
-	CreatedAt    time.Time
-	UpdatedAt    time.Time
-	Groups       []*Group
+	ID           uuid.UUID  `json:"id"`
+	Username     string     `json:"username"`
+	DisplayName  string     `json:"display_name"`
+	Email        string     `json:"email"`
+	PasswordHash string     `json:"-"`
+	Phone        string     `json:"phone"`
+	Status       UserStatus `json:"status"`
+	CreatedAt    time.Time  `json:"created_at"`
+	UpdatedAt    time.Time  `json:"updated_at"`
+	Groups       []*Group   `json:"groups,omitempty"`
 }
 
 // CreateUserInput holds input for creating a new user.
@@ -53,8 +53,8 @@ type ListUsersInput struct {
 
 // ListResult holds a paginated list of items.
 type ListResult[T any] struct {
-	Items    []*T
-	Total    int
-	Page     int
-	PageSize int
+	Items    []*T `json:"items"`
+	Total    int  `json:"total"`
+	Page     int  `json:"page"`
+	PageSize int  `json:"page_size"`
 }

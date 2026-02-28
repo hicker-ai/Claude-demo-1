@@ -50,8 +50,8 @@ func (h *Handler) handleSearch(w *gldap.ResponseWriter, r *gldap.Request) {
 	if f != nil {
 		oc := extractObjectClass(f)
 		if oc != "" {
-			searchUsers = isUserObjectClass(oc, h.mode)
-			searchGroups = isGroupObjectClass(oc, h.mode)
+			searchUsers = isUserObjectClass(oc, h.cfg.Mode)
+			searchGroups = isGroupObjectClass(oc, h.cfg.Mode)
 		}
 	}
 

@@ -27,7 +27,7 @@ func (h *Handler) handleBind(w *gldap.ResponseWriter, r *gldap.Request) {
 	h.logger.Info("LDAP bind attempt", zap.String("dn", bindDN))
 
 	// Extract username from DN
-	username, err := dn.ExtractUsername(bindDN, h.baseDN, h.mode)
+	username, err := dn.ExtractUsername(bindDN, h.cfg.BaseDN, h.cfg.Mode)
 	if err != nil {
 		h.logger.Warn("failed to extract username from DN",
 			zap.String("dn", bindDN),

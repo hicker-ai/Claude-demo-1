@@ -49,7 +49,17 @@ type SetStatusReq struct {
 	Status string `json:"status" binding:"required,oneof=enabled disabled"`
 }
 
-// Create creates a new user.
+// Create godoc
+// @Summary      Create user
+// @Description  Create a new user (no authentication required)
+// @Tags         User
+// @Accept       json
+// @Produce      json
+// @Param        request  body      CreateUserReq  true  "User info"
+// @Success      200      {object}  Response{data=domain.User}
+// @Failure      400      {object}  Response
+// @Failure      500      {object}  Response
+// @Router       /api/v1/users [post]
 func (h *UserHandler) Create(c *gin.Context) {
 	var req CreateUserReq
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -71,7 +81,17 @@ func (h *UserHandler) Create(c *gin.Context) {
 	OK(c, u)
 }
 
-// Get retrieves a user by ID.
+// Get godoc
+// @Summary      Get user
+// @Description  Retrieve a user by ID
+// @Tags         User
+// @Produce      json
+// @Param        Authorization  header    string  true  "Bearer token"
+// @Param        id             path      string  true  "User ID (UUID)"
+// @Success      200            {object}  Response{data=domain.User}
+// @Failure      400            {object}  Response
+// @Failure      404            {object}  Response
+// @Router       /api/v1/users/{id} [get]
 func (h *UserHandler) Get(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
@@ -87,7 +107,18 @@ func (h *UserHandler) Get(c *gin.Context) {
 	OK(c, u)
 }
 
-// List lists users with pagination and search.
+// List godoc
+// @Summary      List users
+// @Description  List users with pagination and optional search
+// @Tags         User
+// @Produce      json
+// @Param        Authorization  header    string  true   "Bearer token"
+// @Param        page           query     int     false  "Page number (default 1)"
+// @Param        page_size      query     int     false  "Page size (default 20, max 100)"
+// @Param        search         query     string  false  "Search by username, display_name, or email"
+// @Success      200            {object}  Response{data=domain.ListResult[domain.User]}
+// @Failure      500            {object}  Response
+// @Router       /api/v1/users [get]
 func (h *UserHandler) List(c *gin.Context) {
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
 	pageSize, _ := strconv.Atoi(c.DefaultQuery("page_size", "20"))
@@ -105,7 +136,19 @@ func (h *UserHandler) List(c *gin.Context) {
 	OK(c, result)
 }
 
-// Update updates a user.
+// Update godoc
+// @Summary      Update user
+// @Description  Update user fields (display_name, email, phone)
+// @Tags         User
+// @Accept       json
+// @Produce      json
+// @Param        Authorization  header    string         true  "Bearer token"
+// @Param        id             path      string         true  "User ID (UUID)"
+// @Param        request        body      UpdateUserReq  true  "Fields to update"
+// @Success      200            {object}  Response{data=domain.User}
+// @Failure      400            {object}  Response
+// @Failure      500            {object}  Response
+// @Router       /api/v1/users/{id} [put]
 func (h *UserHandler) Update(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
@@ -131,7 +174,17 @@ func (h *UserHandler) Update(c *gin.Context) {
 	OK(c, u)
 }
 
-// Delete deletes a user.
+// Delete godoc
+// @Summary      Delete user
+// @Description  Delete a user by ID
+// @Tags         User
+// @Produce      json
+// @Param        Authorization  header    string  true  "Bearer token"
+// @Param        id             path      string  true  "User ID (UUID)"
+// @Success      200            {object}  Response
+// @Failure      400            {object}  Response
+// @Failure      500            {object}  Response
+// @Router       /api/v1/users/{id} [delete]
 func (h *UserHandler) Delete(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
@@ -146,7 +199,18 @@ func (h *UserHandler) Delete(c *gin.Context) {
 	OK(c, nil)
 }
 
-// ChangePassword changes a user's password.
+// ChangePassword godoc
+// @Summary      Change password
+// @Description  Change a user's password (requires old password verification)
+// @Tags         User
+// @Accept       json
+// @Produce      json
+// @Param        Authorization  header    string             true  "Bearer token"
+// @Param        id             path      string             true  "User ID (UUID)"
+// @Param        request        body      ChangePasswordReq  true  "Old and new password"
+// @Success      200            {object}  Response
+// @Failure      400            {object}  Response
+// @Router       /api/v1/users/{id}/password [put]
 func (h *UserHandler) ChangePassword(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
@@ -167,7 +231,19 @@ func (h *UserHandler) ChangePassword(c *gin.Context) {
 	OK(c, nil)
 }
 
-// SetStatus enables or disables a user.
+// SetStatus godoc
+// @Summary      Set user status
+// @Description  Enable or disable a user account
+// @Tags         User
+// @Accept       json
+// @Produce      json
+// @Param        Authorization  header    string        true  "Bearer token"
+// @Param        id             path      string        true  "User ID (UUID)"
+// @Param        request        body      SetStatusReq  true  "Status: enabled | disabled"
+// @Success      200            {object}  Response
+// @Failure      400            {object}  Response
+// @Failure      500            {object}  Response
+// @Router       /api/v1/users/{id}/status [put]
 func (h *UserHandler) SetStatus(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
@@ -188,7 +264,17 @@ func (h *UserHandler) SetStatus(c *gin.Context) {
 	OK(c, nil)
 }
 
-// GetGroups returns the groups a user belongs to.
+// GetGroups godoc
+// @Summary      Get user groups
+// @Description  Return all groups a user belongs to
+// @Tags         User
+// @Produce      json
+// @Param        Authorization  header    string  true  "Bearer token"
+// @Param        id             path      string  true  "User ID (UUID)"
+// @Success      200            {object}  Response{data=[]domain.Group}
+// @Failure      400            {object}  Response
+// @Failure      500            {object}  Response
+// @Router       /api/v1/users/{id}/groups [get]
 func (h *UserHandler) GetGroups(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {

@@ -66,13 +66,13 @@ export default function LDAPConfig() {
     }
   };
 
-  const currentMode = Form.useWatch('mode', form) ?? config?.mode ?? 'OpenLDAP';
+  const currentMode = Form.useWatch('mode', form) ?? config?.mode ?? 'openldap';
   const currentPort = Form.useWatch('port', form) ?? config?.port ?? 389;
   const currentBaseDN = Form.useWatch('base_dn', form) ?? config?.base_dn ?? 'dc=example,dc=com';
 
-  const ldapSearchExample = currentMode === 'ActiveDirectory'
-    ? `ldapsearch -H ldap://localhost:${currentPort} -D "CN=admin,${currentBaseDN}" -w password -b "${currentBaseDN}" "(sAMAccountName=username)"`
-    : `ldapsearch -H ldap://localhost:${currentPort} -D "cn=admin,${currentBaseDN}" -w password -b "${currentBaseDN}" "(uid=username)"`;
+  const ldapSearchExample = currentMode === 'activedirectory'
+    ? `ldapsearch -H ldap://localhost:${currentPort} -D "CN=admin,CN=Users,${currentBaseDN}" -w password -b "${currentBaseDN}" "(sAMAccountName=username)"`
+    : `ldapsearch -H ldap://localhost:${currentPort} -D "uid=admin,ou=users,${currentBaseDN}" -w password -b "${currentBaseDN}" "(uid=username)"`;
 
   return (
     <div>
@@ -115,8 +115,8 @@ export default function LDAPConfig() {
               rules={[{ required: true, message: '请选择模式' }]}
             >
               <Radio.Group>
-                <Radio value="OpenLDAP">OpenLDAP</Radio>
-                <Radio value="ActiveDirectory">Active Directory</Radio>
+                <Radio value="openldap">OpenLDAP</Radio>
+                <Radio value="activedirectory">Active Directory</Radio>
               </Radio.Group>
             </Form.Item>
             <Form.Item

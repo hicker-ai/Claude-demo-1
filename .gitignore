@@ -29,6 +29,12 @@ bin/
 web/node_modules/
 web/dist/
 
+# Data
+data/
+
+# Logs
+logs/
+
 # Environment
 .env
 .env.local
